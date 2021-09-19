@@ -6,10 +6,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-//Instance of ICOnfiguratopn
-var provider = builder.Services.BuildServiceProvider();
 
-var configuration = provider.GetRequiredService<IConfiguration>();
+//Initialize connectionstring
+var configuration = builder.Configuration.GetValue<string>("CacheSettings:ConnectionString");
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -19,7 +18,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 builder.Services.AddStackExchangeRedisCache(options=>
 {
-    options.Configuration = configuration.GetValue<string>("CacheSettings:ConnectionString");
+    options.Configuration = configuration;
 });
 builder.Services.AddScoped<IBasketRepository, BasketRepository>();
 
