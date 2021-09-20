@@ -4,6 +4,7 @@ using Npgsql;
 using Microsoft.Extensions.Configuration;
 using Dapper;
 using System.Threading.Tasks;
+using System;
 
 namespace Discount.API.Repository;
 public class DiscountRepository:IDiscountRepository
