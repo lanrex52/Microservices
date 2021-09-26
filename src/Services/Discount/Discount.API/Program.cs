@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 var host = WebApplication.Create(args);
 //Migrate database
-//host.MigrateDatabase();
+host.MigrateDatabase();
 
 
 builder.Services.AddControllers();
