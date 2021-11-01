@@ -1,6 +1,7 @@
 using Basket.API.GrpcServices;
 using Basket.API.Repository;
 using Discount.Grpc.Protos;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,14 +21,31 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = "Basket.API", Version = "v1" });
 });
+//Redis Configuration
 builder.Services.AddStackExchangeRedisCache(options=>
 {
     options.Configuration = configuration;
 });
+//General Configuration
 builder.Services.AddScoped<IBasketRepository, BasketRepository>();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+
+//Grpc Configuration
 builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>
     (o => o.Address = new Uri(grpcConn));
 builder.Services.AddScoped<DiscountGrpcService>();
+
+//RabbitMQ Configuration
+builder.Services.AddMassTransit(config => {
+    config.UsingRabbitMq((ctx, cfg) =>
+    {
+        cfg.Host(builder.Configuration["EventBusSettings:HostAddress"]);
+    });
+
+    });
+
+builder.Services.AddMassTransitHostedService();
 
 var app = builder.Build();
 
